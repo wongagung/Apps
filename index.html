@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f19">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>AirCast Mobile Mirror</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="stylesheet" href="mobile.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="mobile-container">
+    <!-- Top Header -->
+    <header class="mobile-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>AirCast <span class="gradient-text">Pro</span></h1>
+          <span class="subtext">Mobile Streaming Transmitter</span>
+        </div>
+      </div>
+      <div class="status-badge" id="connStatus">
+        <span class="dot"></span>
+        <span id="connStatusText">Menghubungkan...</span>
+      </div>
+    </header>
+
+    <!-- Main Card Body -->
+    <main class="mobile-main">
+      <!-- Setup & Ready Card -->
+      <section class="card" id="readyCard">
+        <div class="device-detected-banner" id="deviceBanner">
+          <span class="os-icon" id="osIcon">📱</span>
+          <div class="os-text">
+            <h3 id="osTitle">Mendeteksi Device...</h3>
+            <p id="osSubtitle">Siap untuk screen mirroring ke PC</p>
+          </div>
+        </div>
+
+        <div class="instruction-box" id="instructionBox">
+          <div class="step-badge">Petunjuk Singkat</div>
+          <p id="instructionText">Tap tombol <strong>"Mulai Mirroring"</strong> di bawah, lalu pilih bagikan seluruh layar perangkat kamu.</p>
+        </div>
+
+        <!-- PWA Standalone App Install Tip -->
+        <div class="pwa-install-banner" id="pwaInstallBanner">
+          <div class="pwa-icon">📱</div>
+          <div class="pwa-text">
+            <strong>Pasang Aplikasi di Layar HP</strong>
+            <span id="pwaInstruction">iOS: Tap ikon Bagikan (↑) &gt; Pilih "Tambahkan ke Layar Utama"</span>
+          </div>
+          <button class="btn-pwa-install hidden" id="btnPwaInstall">Pasang</button>
+        </div>
+
+        <div class="fps-tip-box" id="fpsTipBox">
+          ⚡ <strong>Tips 60/120 FPS:</strong> Pastikan <em>Mode Daya Rendah / Hemat Baterai</em> di HP mati agar iOS/Android tidak mengunci layar ke 30 FPS.
+        </div>
+
+        <!-- Mirroring Settings -->
+        <div class="settings-group">
+          <div class="setting-item">
+            <div class="setting-label">
+              <strong>Kualitas Video</strong>
+              <small>Pilih resolusi & kecepatan frame</small>
+            </div>
+            <select id="qualitySelect" class="custom-select">
+              <option value="native4k" selected>💎 4K / Native Retina (Resolusi Asli Layar HP - Super Tajam)</option>
+              <option value="2k120">🔥 2K QHD (1440p - 120 FPS ProMotion)</option>
+              <option value="1080p120">⚡ 1080p Full HD (120 FPS Ultra Smooth)</option>
+              <option value="1080p60">✨ 1080p Full HD (60 FPS Standard)</option>
+              <option value="720p60">🚀 720p (60 FPS Fast Gaming)</option>
+            </select>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-label">
+              <strong>Sertakan Audio</strong>
+              <small>Bagikan suara aplikasi / media</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="audioToggle" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Big Action Button -->
+        <div class="action-wrap">
+          <button class="btn-start" id="btnStartMirror">
+            <span class="btn-glow"></span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <span>Mulai Mirroring Layar</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Active Streaming Card -->
+      <section class="card active-card hidden" id="activeCard">
+        <div class="streaming-indicator">
+          <div class="pulse-ring"></div>
+          <div class="stream-icon">📡</div>
+          <h2>Layar Sedang Terhubung</h2>
+          <p class="stream-sub">Tampilan layar HP kamu sekarang muncul langsung di aplikasi Windows PC.</p>
+        </div>
+
+        <div class="stream-stats-bar">
+          <div class="stat-pill">
+            <span class="stat-title">DURASI</span>
+            <span class="stat-num" id="streamTimer">00:00</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-title">FPS</span>
+            <span class="stat-num" id="mobileFps">60</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-title">RESOLUSI</span>
+            <span class="stat-num" id="mobileRes">--</span>
+          </div>
+        </div>
+
+        <div class="tip-card">
+          💡 <strong>Tips:</strong> Kamu bisa minimize atau buka game/aplikasi apa saja di HP, layar di PC akan tetap mengikuti secara real-time!
+        </div>
+
+        <!-- Innovation: Universal Clipboard & File Drop PC <-> Mobile -->
+        <div class="mobile-tools-section">
+          <div class="tool-title">⚡ Fitur Inovasi Terhubung</div>
+          
+          <!-- Clipboard Sync Box -->
+          <div class="clipboard-box">
+            <div class="clipboard-header">
+              <span>📋 Universal Clipboard Sync</span>
+            </div>
+            <div class="clipboard-input-row">
+              <input type="text" id="mobileClipInput" placeholder="Ketik / tempel teks untuk kirim ke PC..." />
+              <button id="btnSendClipToPc" class="btn-tool">Kirim ke PC</button>
+            </div>
+            <div id="clipReceivedBanner" class="clip-banner hidden">
+              <span>Teks dari PC:</span>
+              <strong id="clipReceivedText">--</strong>
+              <button id="btnCopyReceivedClip" class="btn-copy-chip">Salin</button>
+            </div>
+          </div>
+
+          <!-- Quick File Drop -->
+          <div class="file-drop-box">
+            <div class="file-header">
+              <span>📁 Quick File Transfer</span>
+            </div>
+            <input type="file" id="mobileFileInput" style="display: none;" />
+            <button id="btnPickFileMobile" class="btn-file-mobile">
+              📤 Kirim Foto / Dokumen ke PC
+            </button>
+            <div id="fileUploadStatus" class="file-status hidden"></div>
+          </div>
+
+          <!-- OLED Battery Saver Button -->
+          <div class="dimmer-box">
+            <button id="btnToggleDimmer" class="btn-dim-mobile">
+              🌙 Redupkan Layar HP (Hemat Baterai OLED)
+            </button>
+          </div>
+        </div>
+
+        <div class="action-wrap">
+          <button class="btn-stop" id="btnStopMirror">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+            </svg>
+            <span>Hentikan Mirroring</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Fallback / Camera Mirroring option if browser restricts screen share -->
+      <section class="camera-fallback-card" id="cameraFallbackCard" style="display: none;">
+        <p>Perangkat tidak mengizinkan rekam layar di browser ini?</p>
+        <button class="btn-secondary-mobile" id="btnCameraMirror">
+          Gunakan Mirroring Kamera Belakang / Depan
+        </button>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mobile-footer">
+      <span>AirCast Pro Windows • Zero App Install Required</span>
+    </footer>
+
+    <!-- OLED Blackout / Battery Saver Overlay -->
+    <div class="oled-dimmer-overlay hidden" id="oledDimmerOverlay">
+      <div class="dimmer-content">
+        <div class="dimmer-icon">🌙</div>
+        <h3>Mode Hemat Baterai Aktif</h3>
+        <p>Layar HP diredupkan. Stream 120 FPS tetap berjalan lancar ke PC.</p>
+        <button class="btn-wake-dimmer" id="btnWakeDimmer">Ketuk untuk Membangunkan Layar</button>
+      </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal" id="errorModal">
+      <div class="modal-card">
+        <div class="modal-icon">⚠️</div>
+        <h3 id="modalTitle">Perhatian</h3>
+        <p id="modalMsg">Pesan error</p>
+        <button class="btn-modal" id="btnModalClose">Mengerti</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="mobile.js"></script>
+</body>
+</html>
+
