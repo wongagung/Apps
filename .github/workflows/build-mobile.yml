@@ -19,36 +19,39 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.5'
 
       - name: Build Android APK
         working-directory: mobile-app/android
         run: |
-          chmod +x gradlew || true
-          gradle wrapper
-          ./gradlew assembleDebug --stacktrace
+          gradle assembleDebug --stacktrace
 
-      - name: Upload APK Artifact
+      - name: Rename APK for Easy Download
+        run: |
+          cp mobile-app/android/app/build/outputs/apk/debug/app-debug.apk AirCast-Pro.apk
+
+      - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: AirCast-Pro-Android-APK
-          path: mobile-app/android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: warn
+          path: AirCast-Pro.apk
+          if-no-files-found: error
 
   build-ios:
-    name: 🍏 Build iOS IPA / WebClip
-    runs-on: macos-latest
+    name: 🍏 Build iOS IPA Bundle
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Package iOS WebClip & Standalone Bundle
+      - name: Package iOS IPA & Standalone App
         run: |
-          mkdir -p build/ios-payload/Payload
-          cp -r src/mobile build/ios-payload/Payload/AirCastPro.app
-          cd build/ios-payload
-          zip -r ../../AirCast-Pro.ipa Payload
+          mkdir -p Payload/AirCastPro.app
+          cp -r src/mobile/* Payload/AirCastPro.app/
+          zip -r AirCast-Pro.ipa Payload
           echo "iOS IPA package created successfully"
 
       - name: Upload iOS IPA Artifact
@@ -56,5 +59,4 @@ jobs:
         with:
           name: AirCast-Pro-iOS-IPA
           path: AirCast-Pro.ipa
-          if-no-files-found: warn
-
+          if-no-files-found: error
