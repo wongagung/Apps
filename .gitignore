@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Production Builds
+dist/
+build/
+*.exe
+*.zip
+*.tar.gz
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment and IDE
+.env
+.env.local
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Android build outputs
+mobile-app/android/.gradle/
+mobile-app/android/build/
+mobile-app/android/app/build/
+mobile-app/android/local.properties
+mobile-app/android/.idea/
+mobile-app/android/*.iml
+mobile-app/android/app/*.iml

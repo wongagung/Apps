@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AirCast Pro</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Modern Windows 11 Titlebar -->
+    <header class="titlebar">
+      <div class="titlebar-drag-region">
+        <div class="app-brand">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <span class="app-title">AirCast <span class="highlight">Pro</span></span>
+          <span class="version-tag">v2.5 Pro</span>
+          <span class="zero-delay-tag">⚡ 0ms Ultra-Low Latency</span>
+        </div>
+
+        <div class="connection-pill" id="headerStatusPill">
+          <span class="status-dot pulse" id="statusDot"></span>
+          <span id="statusText">Menunggu Koneksi</span>
+        </div>
+      </div>
+
+      <div class="titlebar-controls">
+        <button class="titlebar-btn" id="btnMinimize" title="Minimize">
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <rect y="5" width="12" height="1" fill="currentColor" />
+          </svg>
+        </button>
+        <button class="titlebar-btn" id="btnMaximize" title="Maximize">
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <rect x="1.5" y="1.5" width="9" height="9" stroke="currentColor" stroke-width="1" fill="none" />
+          </svg>
+        </button>
+        <button class="titlebar-btn close-btn" id="btnClose" title="Close">
+          <svg width="12" height="12" viewBox="0 0 12 12">
+            <polygon points="11 1.7 10.3 1 6 5.3 1.7 1 1 1.7 5.3 6 1 10.3 1.7 11 6 6.7 10.3 11 11 10.3 6.7 6"
+              fill="currentColor" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Waiting / Pairing Screen -->
+      <section class="pairing-view" id="pairingView">
+        <div class="pairing-card">
+          <div class="pairing-header">
+            <div class="badge-new">Ultra Low Latency WebRTC</div>
+            <h2>Scan Barcode untuk Mirroring Layar</h2>
+            <p>Dukung HP/Tablet <strong>Android</strong> dan <strong>iOS (iPhone/iPad)</strong> tanpa instal aplikasi
+              tambahan.</p>
+          </div>
+
+          <div class="qr-presentation-area">
+            <div class="qr-card-glow">
+              <div class="qr-wrapper" id="qrContainer">
+                <img id="qrImage" src="" alt="Scan QR Code" />
+                <div class="scanline"></div>
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket top-right"></div>
+                <div class="corner-bracket bottom-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+              </div>
+            </div>
+
+            <div class="pairing-details">
+              <!-- Network Adapter Selection -->
+              <div class="detail-group">
+                <label>Pilih Jaringan Wi-Fi / IP:</label>
+                <div class="select-wrapper">
+                  <select id="networkSelect">
+                    <option value="">Memuat adapter...</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Manual PIN Entry -->
+              <div class="detail-group">
+                <label>PIN Manual (Opsi Cepat):</label>
+                <div class="pin-display">
+                  <span id="pinText">------</span>
+                  <button class="icon-action-btn" id="btnCopyPin" title="Salin PIN">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Direct URL -->
+              <div class="detail-group">
+                <label>Tautan Web Mirroring:</label>
+                <div class="url-copy-box">
+                  <input type="text" id="urlInput" readonly value="https://..." />
+                  <button class="btn-copy" id="btnCopyUrl">Salin</button>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="action-buttons-row">
+                <button class="btn-secondary" id="btnRegenerate">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 4v6h-6"></path>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  Buat QR Baru
+                </button>
+                <button class="btn-primary" id="btnOpenLocalTest">
+                  Buka di Browser PC (Tes)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick instructions tabs -->
+          <div class="instructions-accordion">
+            <div class="instruction-col">
+              <div class="instruction-badge ios-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 1.01-2.87-.96.04-2.17.65-2.84 1.44-.59.69-1.11 1.76-1.04 2.82 1.07.08 2.26-.59 2.87-1.39z" />
+                </svg>
+                iOS (iPhone / iPad)
+              </div>
+              <ol>
+                <li>Buka aplikasi <strong>Kamera</strong> bawaan iOS.</li>
+                <li>Arahkan ke QR Code di atas lalu tap tautan kuning yang muncul.</li>
+                <li>Jika muncul peringatan sertifikat: Tap <strong>Tampilkan Detail</strong> &gt; <strong>Kunjungi situs
+                    ini</strong>.</li>
+                <li>Tap <strong>Mulai Mirroring</strong> &gt; Pilih <strong>Mulai Siaran</strong>.</li>
+              </ol>
+            </div>
+
+            <div class="instruction-col">
+              <div class="instruction-badge android-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.551 0 .9993.4482.9993.9993.0001.5511-.4483.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9994.4482.9994.9993 0 .5511-.4483.9997-.9994.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.412 13.8533 8.087 12 8.087c-1.8533 0-3.5902.325-5.1368.8627L4.8409 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396" />
+                </svg>
+                Android (HP / Tablet)
+              </div>
+              <ol>
+                <li>Buka aplikasi <strong>Kamera / Google Lens / QR Scanner</strong>.</li>
+                <li>Arahkan ke QR Code di atas lalu buka tautan di Chrome.</li>
+                <li>Jika muncul peringatan sertifikat: Tap <strong>Lanjutan (Advanced)</strong> &gt; <strong>Lanjutkan
+                    ke situs</strong>.</li>
+                <li>Tap <strong>Mulai Mirroring</strong> &gt; Tekan <strong>Mulai Sekarang</strong>.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Mirroring Studio View -->
+      <section class="mirror-view hidden" id="mirrorView">
+        <!-- Floating Top HUD Statistics -->
+        <div class="hud-top" id="hudTop">
+          <div class="hud-item device-badge">
+            <span class="device-icon" id="hudDeviceIcon">📱</span>
+            <span id="hudDeviceName">Mobile Device</span>
+          </div>
+          <div class="hud-item stat-item">
+            <span class="stat-label">Delay</span>
+            <span class="stat-value latency-zero" id="hudLatency">~0 ms</span>
+          </div>
+          <div class="hud-item stat-item">
+            <span class="stat-label">FPS</span>
+            <span class="stat-value" id="hudFps">60</span>
+          </div>
+          <div class="hud-item stat-item">
+            <span class="stat-label">Resolusi</span>
+            <span class="stat-value" id="hudResolution">-- x --</span>
+          </div>
+          <div class="hud-item stat-item">
+            <span class="stat-label">Bitrate</span>
+            <span class="stat-value" id="hudBitrate">0.0 Mbps</span>
+          </div>
+          <div class="hud-item stat-item" id="recTimerBadge" style="display: none;">
+            <span class="rec-dot"></span>
+            <span class="stat-value text-red" id="hudRecTimer">00:00</span>
+          </div>
+          <div class="hud-item stat-item gamepad-item hidden" id="hudGamepadBadge">
+            <span class="gamepad-dot"></span>
+            <span id="hudGamepadName">🎮 Stik Terhubung</span>
+          </div>
+        </div>
+
+        <!-- Video Player Display Container -->
+        <div class="video-stage" id="videoStage">
+          <div class="video-wrapper" id="videoWrapper">
+            <video id="remoteVideo" autoplay playsinline></video>
+            <canvas id="annotationCanvas" class="annotation-canvas"></canvas>
+          </div>
+
+          <!-- Drag & Drop Zone for Quick File Send -->
+          <div class="file-drop-overlay hidden" id="fileDropOverlay">
+            <div class="drop-icon">📤</div>
+            <h3>Lepas File di Sini</h3>
+            <p>File akan langsung dikirim dan diunduh di perangkat HP/Tablet</p>
+          </div>
+
+          <!-- Annotation Palette (Pen Tool) -->
+          <div class="annotation-palette hidden" id="annotationPalette">
+            <span class="palette-title">✏️ Mode Coret</span>
+            <div class="color-options">
+              <button class="color-dot active" data-color="#06b6d4" style="background:#06b6d4;" title="Cyan"></button>
+              <button class="color-dot" data-color="#ef4444" style="background:#ef4444;" title="Merah"></button>
+              <button class="color-dot" data-color="#facc15" style="background:#facc15;" title="Kuning"></button>
+              <button class="color-dot" data-color="#10b981" style="background:#10b981;" title="Hijau"></button>
+              <button class="color-dot" data-color="#ffffff" style="background:#ffffff;" title="Putih"></button>
+            </div>
+            <button class="btn-palette" id="btnClearAnnotation" title="Bersihkan Coretan">🧹 Bersihkan</button>
+            <button class="btn-palette btn-close-pal" id="btnCloseAnnotation" title="Tutup Mode Coret">✕ Tutup</button>
+          </div>
+
+          <!-- OBS Clean Feed Exit Pill -->
+          <div class="obs-clean-exit hidden" id="obsCleanExit">
+            <span>🎬 OBS Clean Feed Aktif • Tekan ESC atau klik untuk kembali</span>
+          </div>
+        </div>
+
+        <!-- Floating Bottom Glass Control Bar -->
+        <div class="hud-bottom" id="hudBottom">
+          <div class="control-group">
+            <!-- Fullscreen -->
+            <button class="hud-btn" id="btnFullscreen" title="Layar Penuh (F11)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3">
+                </path>
+              </svg>
+              <span>Layar Penuh</span>
+            </button>
+
+            <!-- Instant Replay 30s (ShadowPlay style) -->
+            <button class="hud-btn highlight-gold" id="btnReplay30s"
+              title="Simpan Replay 30 Detik Terakhir (Alt + F10)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              <span>⚡ Replay 30s</span>
+            </button>
+
+            <!-- OBS Clean Feed -->
+            <button class="hud-btn" id="btnObsClean"
+              title="Mode OBS Clean Feed (Hapus semua HUD/overlay untuk livestreaming)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 7l-7 5 7 5V7z"></path>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+              </svg>
+              <span>OBS Clean</span>
+            </button>
+
+            <!-- Floating PiP Always on Top -->
+            <button class="hud-btn" id="btnTogglePip" title="Mode Floating PiP (Always-on-Top di sudut layar)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <rect x="12" y="9" width="8" height="6" rx="1" ry="1"></rect>
+              </svg>
+              <span id="pipLabel">PiP</span>
+            </button>
+
+            <!-- Live Annotation / Pen -->
+            <button class="hud-btn" id="btnAnnotation"
+              title="Mode Coret Layar / Pen Tool (Gambar catatan langsung di layar)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                <path d="M2 2l7.586 7.586"></path>
+                <circle cx="11" cy="11" r="2"></circle>
+              </svg>
+              <span>Coret</span>
+            </button>
+
+            <!-- Visual Filters (Vivid Gaming, HDR, etc.) -->
+            <button class="hud-btn" id="btnFilter"
+              title="Filter Visual Real-Time (Normal, Vivid Gaming, HDR Sharp, OLED)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a10 10 0 0 0 0 20v-20z"></path>
+              </svg>
+              <span id="filterLabel">Vivid: Off</span>
+            </button>
+
+            <!-- Universal Clipboard Sync -->
+            <button class="hud-btn" id="btnSyncClipboard" title="Kirim teks Clipboard PC langsung ke HP">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              </svg>
+              <span>Kirim Teks</span>
+            </button>
+
+            <!-- Screenshot Capture -->
+            <button class="hud-btn" id="btnScreenshot" title="Ambil Tangkapan Layar (PNG)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+              <span>Screenshot</span>
+            </button>
+
+            <!-- Screen Recording -->
+            <button class="hud-btn" id="btnRecord" title="Rekam Video Layar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" id="recCircle"></circle>
+                <circle cx="12" cy="12" r="4" fill="currentColor"></circle>
+              </svg>
+              <span id="recBtnLabel">Rekam</span>
+            </button>
+
+            <!-- Rotate 90 deg -->
+            <button class="hud-btn" id="btnRotate" title="Putar Layar 90 Derajat">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+              <span id="rotateDegLabel">0°</span>
+            </button>
+
+            <!-- Fit / Fill Toggle -->
+            <button class="hud-btn" id="btnFitToggle" title="Sesuaikan Tampilan">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <path d="M9 3v18M15 3v18"></path>
+              </svg>
+              <span id="fitLabel">Fit</span>
+            </button>
+
+            <!-- Audio Volume Slider with 200% Gain Boost -->
+            <div class="audio-control-wrapper" id="audioControlWrapper">
+              <button class="hud-btn" id="btnAudioToggle" title="Audio Suara HP & Atur Volume">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  id="audioIcon">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span id="audioLabel">100%</span>
+              </button>
+              <div class="audio-slider-popover hidden" id="audioSliderPopover">
+                <div class="popover-row">
+                  <span>Volume HP</span>
+                  <strong id="volumePercent">100%</strong>
+                </div>
+                <input type="range" id="volumeSlider" min="0" max="200" value="100" class="custom-range" />
+                <div class="volume-hint">Geser &gt;100% untuk Gain Boost</div>
+              </div>
+            </div>
+
+            <!-- Remote Screen Dimmer (Save Mobile Battery) -->
+            <button class="hud-btn" id="btnRemoteDimmer"
+              title="Redupkan Layar HP dari PC (Hemat Baterai OLED & Cegah Panas)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <span>Dim HP</span>
+            </button>
+
+            <!-- Remote Control Info / Helper -->
+            <button class="hud-btn" id="btnRemoteControl" title="Fitur Kontrol Layar dari PC">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="6" width="20" height="12" rx="6"></rect>
+                <path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"></path>
+              </svg>
+              <span>Kontrol</span>
+            </button>
+          </div>
+
+          <div class="control-group-end">
+            <!-- Disconnect / End Mirroring -->
+            <button class="hud-btn danger-btn" id="btnDisconnect" title="Putuskan Koneksi">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                <line x1="12" y1="2" x2="12" y2="12"></line>
+              </svg>
+              <span>Putuskan</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Remote Control Guide Modal -->
+    <div class="modal" id="remoteControlModal">
+      <div class="modal-card">
+        <div class="modal-icon">🎮</div>
+        <h3>Kontrol HP / Tablet dari PC</h3>
+        <div class="modal-body">
+          <div class="info-badge-row">
+            <span class="info-tag-ios">🍏 iOS (iPhone / iPad)</span>
+            <p>Apple membatasi kontrol sentuhan jarak jauh melalui browser demi keamanan privasi & perbankan (sama
+              seperti AnyDesk/Zoom di iOS yang hanya <em>View Only</em>). Untuk mengontrol game iOS dari PC, Anda bisa
+              menggunakan mouse Bluetooth yang dipairing langsung ke iPhone via <strong>AssistiveTouch</strong>.</p>
+          </div>
+          <div class="info-badge-row">
+            <span class="info-tag-android">🤖 Android</span>
+            <p>Android mendukung kontrol klik & ketik langsung dari PC dengan mengaktifkan mode <strong>USB / Wireless
+                Debugging (ADB)</strong>. Klik pada layar video di PC sudah otomatis mengirimkan koordinat sentuhan.</p>
+          </div>
+        </div>
+        <button class="btn-modal" id="btnCloseRemoteModal">Tutup</button>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toastNotification">
+      <span class="toast-icon">ℹ️</span>
+      <span class="toast-message" id="toastMessage">Pesan</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

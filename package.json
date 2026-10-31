@@ -1,0 +1,54 @@
+{
+  "name": "aircast-pro",
+  "version": "1.0.0",
+  "description": "Windows Native Screen Mirroring with QR Barcode Pipeline for Android and iOS",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "build": "electron-builder --win",
+    "build:portable": "electron-builder --win portable",
+    "build:dir": "electron-builder --win --dir"
+  },
+  "build": {
+    "appId": "com.aircast.pro",
+    "productName": "AirCast Pro",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "server.js",
+      "preload.js",
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "build/icon.ico"
+    }
+  },
+  "keywords": [
+    "screen-mirroring",
+    "webrtc",
+    "android",
+    "ios",
+    "windows",
+    "qr-code"
+  ],
+  "author": "Rama Satria Wibawa",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.3.0",
+    "qrcode": "^1.5.4",
+    "selfsigned": "^5.5.0",
+    "ws": "^8.22.1"
+  },
+  "devDependencies": {
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0"
+  }
+}
