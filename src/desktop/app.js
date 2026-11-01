@@ -185,13 +185,27 @@
     }
   }
 
+  let isWebQrMode = false;
+  const btnQrModeLocal = document.getElementById('btnQrModeLocal');
+  const btnQrModeWeb = document.getElementById('btnQrModeWeb');
+
   function applyServerDetails(info) {
     serverInfo = info;
-    if (info.qrDataUrl) {
-      qrImage.src = info.qrDataUrl;
-    }
+    updateQrDisplay();
     pinText.textContent = info.pin || '------';
-    urlInput.value = info.url || '';
+  }
+
+  function updateQrDisplay() {
+    if (!serverInfo) return;
+    if (isWebQrMode && serverInfo.webQrDataUrl) {
+      qrImage.src = serverInfo.webQrDataUrl;
+      urlInput.value = serverInfo.webUrl || '';
+    } else {
+      if (serverInfo.qrDataUrl) {
+        qrImage.src = serverInfo.qrDataUrl;
+      }
+      urlInput.value = serverInfo.url || '';
+    }
   }
 
   function setupInterfaceDropdown(interfaces) {
@@ -701,6 +715,25 @@
   }
 
   function setupEventListeners() {
+    // QR Mode Toggle (Local vs Web Online)
+    if (btnQrModeLocal && btnQrModeWeb) {
+      btnQrModeLocal.addEventListener('click', () => {
+        isWebQrMode = false;
+        btnQrModeLocal.classList.add('active');
+        btnQrModeWeb.classList.remove('active');
+        updateQrDisplay();
+        showToast('Mode QR: IP Lokal (Jalur langsung Wi-Fi)');
+      });
+
+      btnQrModeWeb.addEventListener('click', () => {
+        isWebQrMode = true;
+        btnQrModeWeb.classList.add('active');
+        btnQrModeLocal.classList.remove('active');
+        updateQrDisplay();
+        showToast('Mode QR: Web Online GitHub Pages (Bebas peringatan SSL)');
+      });
+    }
+
     // Copy URL
     btnCopyUrl.addEventListener('click', () => {
       navigator.clipboard.writeText(urlInput.value);

@@ -120,13 +120,15 @@ class MirrorServer extends EventEmitter {
     // API Endpoint for server configuration and session info
     this.app.get('/api/session-info', (req, res) => {
       const ip = this.getPrimaryIP();
-      const mirrorUrl = `https://${ip}:${this.port}/?session=${this.currentSessionToken}&pin=${this.currentPin}`;
+      const localUrl = `https://${ip}:${this.port}/?session=${this.currentSessionToken}&pin=${this.currentPin}`;
+      const webUrl = `https://wongagung.github.io/Apps/?host=${ip}:${this.port}&session=${this.currentSessionToken}&pin=${this.currentPin}`;
       res.json({
         sessionToken: this.currentSessionToken,
         pin: this.currentPin,
         ip,
         port: this.port,
-        url: mirrorUrl,
+        url: localUrl,
+        webUrl: webUrl,
         allInterfaces: this.getNetworkInterfaces()
       });
     });

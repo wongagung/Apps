@@ -39,6 +39,47 @@
 
     <!-- Main Card Body -->
     <main class="mobile-main">
+      <!-- Web Portal Connect Card (Tampil jika dibuka langsung dari GitHub Pages) -->
+      <section class="card web-portal-card hidden" id="webPortalCard">
+        <div class="portal-header">
+          <div class="brand-badge-cyan">AirCast Pro Web Hub</div>
+          <h2>Sambungkan ke PC</h2>
+          <p>Masukkan IP & PIN dari aplikasi AirCast Pro di komputer kamu untuk memulai screen mirroring.</p>
+        </div>
+
+        <div class="portal-form">
+          <div class="input-group">
+            <label for="inputHost">Alamat IP & Port PC:</label>
+            <input type="text" id="inputHost" class="input-field" placeholder="Contoh: 192.168.18.242:8443" />
+          </div>
+
+          <div class="input-group">
+            <label for="inputPin">PIN Sesi PC (6 Angka):</label>
+            <input type="text" id="inputPin" class="input-field" placeholder="Contoh: 123456" />
+          </div>
+
+          <button class="btn-portal-connect" id="btnConnectPc">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14m-7-7l7 7-7 7"/>
+            </svg>
+            <span>Sambungkan ke PC</span>
+          </button>
+        </div>
+
+        <!-- Download Hub for PC & APK -->
+        <div class="download-hub-section">
+          <div class="download-hub-title">Unduh Aplikasi Resmi:</div>
+          <div class="download-links-grid">
+            <a href="https://github.com/wongagung/Apps/releases" target="_blank" class="dl-card">
+              <span>💻 Windows (.exe)</span>
+            </a>
+            <a href="https://github.com/wongagung/Apps/releases" target="_blank" class="dl-card">
+              <span>🤖 Android (.apk)</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Setup & Ready Card -->
       <section class="card" id="readyCard">
         <div class="device-detected-banner" id="deviceBanner">
@@ -105,6 +146,7 @@
             </svg>
             <span>Mulai Mirroring Layar</span>
           </button>
+          <button class="btn-switch-pc" id="btnSwitchPc">⇄ Ganti Alamat PC</button>
         </div>
       </section>
 

@@ -2,10 +2,16 @@
 (function() {
   'use strict';
 
-  // Parse URL Parameters
+  // Parse URL Parameters & Saved Host
   const urlParams = new URLSearchParams(window.location.search);
-  const sessionToken = urlParams.get('session') || '';
-  const pin = urlParams.get('pin') || '';
+  let sessionToken = urlParams.get('session') || localStorage.getItem('aircast_session') || '';
+  let pin = urlParams.get('pin') || localStorage.getItem('aircast_pin') || '';
+  let targetHost = urlParams.get('host') || localStorage.getItem('aircast_host') || '';
+
+  const isGitHubPages = window.location.hostname.includes('github.io');
+  if (!targetHost && !isGitHubPages) {
+    targetHost = window.location.host;
+  }
 
   // DOM Elements
   const connStatus = document.getElementById('connStatus');
@@ -14,6 +20,12 @@
   const osTitle = document.getElementById('osTitle');
   const osSubtitle = document.getElementById('osSubtitle');
   const instructionText = document.getElementById('instructionText');
+
+  const webPortalCard = document.getElementById('webPortalCard');
+  const inputHost = document.getElementById('inputHost');
+  const inputPin = document.getElementById('inputPin');
+  const btnConnectPc = document.getElementById('btnConnectPc');
+  const btnSwitchPc = document.getElementById('btnSwitchPc');
 
   const readyCard = document.getElementById('readyCard');
   const activeCard = document.getElementById('activeCard');
@@ -84,7 +96,17 @@
     checkScreenShareSupport();
     setupEventListeners();
     setupPwaInstallation();
-    connectWebSocket();
+
+    if (!targetHost) {
+      readyCard.classList.add('hidden');
+      if (webPortalCard) webPortalCard.classList.remove('hidden');
+      connStatusText.textContent = 'Menunggu Alamat PC';
+      connStatus.classList.remove('connected');
+    } else {
+      if (webPortalCard) webPortalCard.classList.add('hidden');
+      readyCard.classList.remove('hidden');
+      connectWebSocket();
+    }
   }
 
   function setupPwaInstallation() {
@@ -164,14 +186,21 @@
   }
 
   function connectWebSocket() {
+    if (!targetHost) return;
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host;
-    const wsUrl = `${protocol}//${host}/?role=mobile&session=${sessionToken}&pin=${pin}`;
+    const wsUrl = `${protocol}//${targetHost}/?role=mobile&session=${sessionToken}&pin=${pin}`;
 
     connStatusText.textContent = 'Menghubungkan...';
     connStatus.classList.remove('connected');
 
-    ws = new WebSocket(wsUrl);
+    try {
+      ws = new WebSocket(wsUrl);
+    } catch (e) {
+      console.error('Failed to create WebSocket:', e);
+      connStatusText.textContent = 'Gagal Terhubung';
+      return;
+    }
 
     ws.onopen = () => {
       console.log('[Mobile WS] Connected to PC');
@@ -648,6 +677,41 @@
     btnStopMirror.addEventListener('click', stopMirroring);
     btnCameraMirror.addEventListener('click', () => startMirroring(true));
     btnModalClose.addEventListener('click', () => errorModal.classList.remove('show'));
+
+    // Web Portal PC Connect & Switch
+    if (btnConnectPc) {
+      btnConnectPc.addEventListener('click', () => {
+        const hostVal = inputHost ? inputHost.value.trim() : '';
+        const pinVal = inputPin ? inputPin.value.trim() : '';
+        if (!hostVal) {
+          showModal('Alamat Diperlukan', 'Silakan masukkan alamat IP & Port PC kamu (contoh: 192.168.18.242:8443).');
+          return;
+        }
+        targetHost = hostVal.includes(':') ? hostVal : `${hostVal}:8443`;
+        pin = pinVal;
+        localStorage.setItem('aircast_host', targetHost);
+        if (pin) localStorage.setItem('aircast_pin', pin);
+
+        if (webPortalCard) webPortalCard.classList.add('hidden');
+        readyCard.classList.remove('hidden');
+        connectWebSocket();
+      });
+    }
+
+    if (btnSwitchPc) {
+      btnSwitchPc.addEventListener('click', () => {
+        if (ws) {
+          ws.close();
+          ws = null;
+        }
+        readyCard.classList.add('hidden');
+        if (webPortalCard) webPortalCard.classList.remove('hidden');
+        connStatusText.textContent = 'Menunggu Alamat PC';
+        connStatus.classList.remove('connected');
+        if (inputHost && targetHost) inputHost.value = targetHost;
+        if (inputPin && pin) inputPin.value = pin;
+      });
+    }
 
     // Mobile Clipboard Sync
     const mobileClipInput = document.getElementById('mobileClipInput');

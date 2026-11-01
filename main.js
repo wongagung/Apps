@@ -188,7 +188,9 @@ ipcMain.handle('get-server-info', async () => {
   if (!mirrorServer) return null;
   const ip = currentChosenIp || mirrorServer.getPrimaryIP();
   const url = `https://${ip}:${mirrorServer.port}/?session=${mirrorServer.currentSessionToken}&pin=${mirrorServer.currentPin}`;
+  const webUrl = `https://wongagung.github.io/Apps/?host=${ip}:${mirrorServer.port}&session=${mirrorServer.currentSessionToken}&pin=${mirrorServer.currentPin}`;
   const qrDataUrl = await mirrorServer.generateQRCode(url);
+  const webQrDataUrl = await mirrorServer.generateQRCode(webUrl);
 
   return {
     ip,
@@ -196,7 +198,9 @@ ipcMain.handle('get-server-info', async () => {
     sessionToken: mirrorServer.currentSessionToken,
     pin: mirrorServer.currentPin,
     url,
+    webUrl,
     qrDataUrl,
+    webQrDataUrl,
     interfaces: mirrorServer.getNetworkInterfaces()
   };
 });
@@ -206,13 +210,17 @@ ipcMain.handle('regenerate-session', async () => {
   const session = mirrorServer.regenerateSession();
   const ip = currentChosenIp || session.ip;
   const url = `https://${ip}:${mirrorServer.port}/?session=${session.sessionToken}&pin=${session.pin}`;
+  const webUrl = `https://wongagung.github.io/Apps/?host=${ip}:${mirrorServer.port}&session=${session.sessionToken}&pin=${session.pin}`;
   const qrDataUrl = await mirrorServer.generateQRCode(url);
+  const webQrDataUrl = await mirrorServer.generateQRCode(webUrl);
 
   return {
     ...session,
     ip,
     url,
-    qrDataUrl
+    webUrl,
+    qrDataUrl,
+    webQrDataUrl
   };
 });
 
@@ -223,7 +231,9 @@ ipcMain.handle('get-network-interfaces', () => {
 ipcMain.handle('select-network-interface', async (event, ip) => {
   currentChosenIp = ip;
   const url = `https://${ip}:${mirrorServer.port}/?session=${mirrorServer.currentSessionToken}&pin=${mirrorServer.currentPin}`;
+  const webUrl = `https://wongagung.github.io/Apps/?host=${ip}:${mirrorServer.port}&session=${mirrorServer.currentSessionToken}&pin=${mirrorServer.currentPin}`;
   const qrDataUrl = await mirrorServer.generateQRCode(url);
+  const webQrDataUrl = await mirrorServer.generateQRCode(webUrl);
 
   return {
     ip,
@@ -231,7 +241,9 @@ ipcMain.handle('select-network-interface', async (event, ip) => {
     sessionToken: mirrorServer.currentSessionToken,
     pin: mirrorServer.currentPin,
     url,
-    qrDataUrl
+    webUrl,
+    qrDataUrl,
+    webQrDataUrl
   };
 });
 
